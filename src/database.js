@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 const address = 'localhost';
 const PORT = 27017;
-const database = 'bookAPI';
+const database = 'bazaarAPI';
 const opts = {
   useNewUrlParser: true,
   useUnifiedTopology: true,
