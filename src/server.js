@@ -35,8 +35,8 @@ server.post('/api/marketplaces', async (req, res) => {
           'Marketplaces must include the following properties: name, description and owner',
       });
     }
-    const isDuplicateName = await MarketplaceModel.findOne({ name: body.name });
-    if (isDuplicateName != null) {
+    const marketExists = await MarketplaceModel.findOne({ name: body.name });
+    if (marketExists != null) {
       return res.status(400).json({
         error:
           'Duplicate marketplace: Marketplace with same name already exists',
@@ -49,6 +49,53 @@ server.post('/api/marketplaces', async (req, res) => {
     return res.status(201).send(marketplace._id);
   } catch (e) {
     console.error(e);
+    return res.status(500).send(e);
+  }
+});
+
+server.put('/api/marketplaces/:id', async (req, res) => {
+  try {
+    const { body, params } = req;
+
+    // check for id ... bogus code?
+    if (!params.id) {
+      return res.status(400).json({ error: 'Marketplace ID required' });
+    }
+
+    // check for required fields
+    if (
+      !body.hasOwnProperty('name') ||
+      !body.hasOwnProperty('description') ||
+      !body.hasOwnProperty('owner')
+    ) {
+      return res.status(400).json({
+        error:
+          'Marketplaces must include the following properties: name, description and owner',
+      });
+    }
+    const marketplace = await MarketplaceModel.findByIdAndUpdate(
+      params.id,
+      body,
+      {
+        new: true,
+        lean: true,
+      }
+    );
+    if (marketplace == null) {
+      return res.status(400).json({
+        error: 'Bad ID: Marketplace with specified ID does not exist',
+      });
+    }
+
+    delete marketplace.__v;
+    return res.status(420).send(marketplace);
+  } catch (e) {
+    console.error(e);
+
+    if (e.kind == 'ObjectId' && e.path == '_id') {
+      return res.status(400).json({ error: 'Invalid ID parameter' });
+    }
+
     return res.status(500).send(e);
   }
 });
