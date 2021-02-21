@@ -14,7 +14,7 @@ server.get('/api/marketplaces', async (req, res) => {
   try {
     const marketplaces = await MarketplaceModel.find();
     console.log(marketplaces);
-    return res.json(marketplaces);
+    return res.send(marketplaces);
   } catch (e) {
     console.error(e);
     return res.status(500).send(e);
@@ -46,7 +46,9 @@ server.post('/api/marketplaces', async (req, res) => {
     console.log(marketplace);
     await marketplace.save();
 
-    return res.status(201).send(marketplace._id);
+    return res
+      .status(201)
+      .json({ success: true, type: 'POST', data: { _id: marketplace._id } });
   } catch (e) {
     console.error(e);
     return res.status(500).send(e);
@@ -88,7 +90,32 @@ server.put('/api/marketplaces/:id', async (req, res) => {
     }
 
     delete marketplace.__v;
-    return res.status(420).send(marketplace);
+    return res
+      .status(420)
+      .json({ success: true, type: 'PUT', data: marketplace });
+  } catch (e) {
+    console.error(e);
+
+    if (e.kind == 'ObjectId' && e.path == '_id') {
+      return res.status(400).json({ error: 'Invalid ID parameter' });
+    }
+
+    return res.status(500).send(e);
+  }
+});
+
+server.delete('/api/marketplaces/:id', async (req, res) => {
+  try {
+    const { params } = req;
+
+    const marketplace = await MarketplaceModel.findByIdAndDelete(params.id);
+    if (marketplace == null) {
+      return res.status(400).json({
+        error: 'Bad ID: Marketplace with specified ID does not exist',
+      });
+    }
+
+    return res.status(200).json({ success: true, type: 'DELETE' });
   } catch (e) {
     console.error(e);
 
