@@ -1,6 +1,6 @@
-# Node Babel Template
+# How Bazaar - A Marketplaces Hub
 
-A node.js and babel template repo.
+An app that brings all you favourite marketplaces under one roof.
 
 ## MongoDB
 
