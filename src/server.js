@@ -21,6 +21,18 @@ server.get('/api/marketplaces', async (req, res) => {
   }
 });
 
+server.get('/api/marketplaces/:id', async (req, res) => {
+  const id = req.params.id;
+
+  const marketExists = await MarketplaceModel.findById(id);
+  if (marketExists == null) {
+    return res.status(404).json({
+      error: 'Route not found',
+    });
+  }
+  return res.status(200).send(marketExists);
+});
+
 server.post('/api/marketplaces', async (req, res) => {
   try {
     const { body } = req;
