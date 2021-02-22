@@ -1,14 +1,16 @@
 import express from 'express';
-import { Mongoose } from 'mongoose';
 import { connect, disconnect } from './database';
 import MarketplaceModel from './models/marketplaceModel';
 
 connect();
 const server = express();
-
 const PORT = 5000;
-
 server.use(express.json());
+
+const errors = {
+  badId: { error: 'Bad ID: Marketplace with specified ID does not exist' },
+  noRoute: { error: 'Route not found' },
+};
 
 server.get('/api/marketplaces', async (req, res) => {
   try {
@@ -26,9 +28,7 @@ server.get('/api/marketplaces/:id', async (req, res) => {
 
   const marketExists = await MarketplaceModel.findById(id);
   if (marketExists == null) {
-    return res.status(404).json({
-      error: 'Route not found',
-    });
+    return res.status(404).json(errors.noRoute);
   }
   return res.status(200).send(marketExists);
 });
@@ -88,9 +88,7 @@ server.put('/api/marketplaces/:id', async (req, res) => {
     );
 
     if (marketplace == null) {
-      return res.status(400).json({
-        error: 'Bad ID: Marketplace with specified ID does not exist',
-      });
+      return res.status(400).json(errors.badId);
     }
 
     delete marketplace.__v;
@@ -109,9 +107,7 @@ server.delete('/api/marketplaces/:id', async (req, res) => {
 
     const marketplace = await MarketplaceModel.findByIdAndDelete(params.id);
     if (marketplace == null) {
-      return res.status(400).json({
-        error: 'Bad ID: Marketplace with specified ID does not exist',
-      });
+      return res.status(400).json(errors.badId);
     }
 
     return res.status(200).json({ success: true, type: 'DELETE' });
@@ -122,15 +118,14 @@ server.delete('/api/marketplaces/:id', async (req, res) => {
 });
 
 server.use('*', (req, res) => {
-  return res.status(404).json({ error: 'Route not found' });
+  return res.status(404).json(errors.noRoute);
 });
 
 server.listen(PORT, () => {
   console.log(`Server is listening on port ${PORT}`);
 });
 
-// function declarations
-
+// declarations
 const validateBody = (body) => {
   // returns null if no errors are found.
   // returns *something* if errors are found
