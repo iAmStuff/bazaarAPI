@@ -36,17 +36,13 @@ server.get('/api/marketplaces/:id', async (req, res) => {
 server.post('/api/marketplaces', async (req, res) => {
   try {
     const { body } = req;
+
     // check for required fields
-    if (
-      !body.hasOwnProperty('name') ||
-      !body.hasOwnProperty('description') ||
-      !body.hasOwnProperty('owner')
-    ) {
-      return res.status(400).json({
-        error:
-          'Marketplaces must include the following properties: name, description and owner',
-      });
+    const invalidBody = validateBody(body);
+    if (invalidBody) {
+      return res.status(400).json(invalidBody);
     }
+
     const marketExists = await MarketplaceModel.findOne({ name: body.name });
     if (marketExists != null) {
       return res.status(400).json({
@@ -77,16 +73,11 @@ server.put('/api/marketplaces/:id', async (req, res) => {
     }
 
     // check for required fields
-    if (
-      !body.hasOwnProperty('name') ||
-      !body.hasOwnProperty('description') ||
-      !body.hasOwnProperty('owner')
-    ) {
-      return res.status(400).json({
-        error:
-          'Marketplaces must include the following properties: name, description and owner',
-      });
+    const invalidBody = validateBody(body);
+    if (invalidBody) {
+      return res.status(400).json(invalidBody);
     }
+
     const marketplace = await MarketplaceModel.findByIdAndUpdate(
       params.id,
       body,
@@ -95,6 +86,7 @@ server.put('/api/marketplaces/:id', async (req, res) => {
         lean: true,
       }
     );
+
     if (marketplace == null) {
       return res.status(400).json({
         error: 'Bad ID: Marketplace with specified ID does not exist',
@@ -146,3 +138,21 @@ server.use('*', (req, res) => {
 server.listen(PORT, () => {
   console.log(`Server is listening on port ${PORT}`);
 });
+
+// function declarations
+
+const validateBody = (body) => {
+  // returns null if no errors are found.
+  // returns *something* if errors are found
+  if (
+    !body.hasOwnProperty('name') ||
+    !body.hasOwnProperty('description') ||
+    !body.hasOwnProperty('owner')
+  ) {
+    return {
+      error:
+        'Marketplaces must include the following properties: name, description and owner',
+    };
+  }
+  return null;
+};
