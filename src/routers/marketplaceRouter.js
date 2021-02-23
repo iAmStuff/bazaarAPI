@@ -51,7 +51,7 @@ router
 
     const marketExists = await MarketplaceModel.findById(id);
     if (marketExists == null) {
-      return res.status(404).json(errors.noRoute);
+      return res.status(404).json({ error: 'Route not found' });
     }
     return res.status(200).send(marketExists);
   })
@@ -80,7 +80,7 @@ router
       );
 
       if (marketplace == null) {
-        return res.status(400).json(errors.badId);
+        return res.status(400).json({ error: 'Route not found' });
       }
 
       delete marketplace.__v;
@@ -98,7 +98,7 @@ router
 
       const marketplace = await MarketplaceModel.findByIdAndDelete(params.id);
       if (marketplace == null) {
-        return res.status(400).json(errors.badId);
+        return res.status(400).json({ error: 'Route not found' });
       }
 
       return res.status(200).json({ success: true, type: 'DELETE' });

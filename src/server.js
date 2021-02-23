@@ -10,11 +10,6 @@ server.use(express.json());
 
 server.use('/api/marketplaces', marketplaceRouter);
 
-const errors = {
-  badId: { error: 'Bad ID: Marketplace with specified ID does not exist' },
-  noRoute: { error: 'Route not found' },
-};
-
 server.use('*', (req, res) => {
   return res.status(404).json({ error: 'Route not found' });
 });
