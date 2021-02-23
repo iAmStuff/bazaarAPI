@@ -1,7 +1,6 @@
 import express from 'express';
 import morgan from 'morgan';
 import { connect, disconnect } from './database';
-import MarketplaceModel from './models/marketplaceModel';
 import marketplaceRouter from './routers/marketplaceRouter';
 
 connect();
