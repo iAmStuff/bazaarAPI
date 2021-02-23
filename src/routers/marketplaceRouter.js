@@ -7,7 +7,6 @@ router
   .get(async (req, res) => {
     try {
       const marketplaces = await MarketplaceModel.find();
-      console.log(marketplaces);
       return res.send(marketplaces);
     } catch (e) {
       console.error(e);
@@ -32,7 +31,6 @@ router
         });
       }
       const marketplace = new MarketplaceModel(body);
-      console.log(marketplace);
       await marketplace.save();
 
       return res
@@ -85,7 +83,7 @@ router
 
       delete marketplace.__v;
       return res
-        .status(420)
+        .status(200)
         .json({ success: true, type: 'PUT', data: marketplace });
     } catch (e) {
       console.error(e);
