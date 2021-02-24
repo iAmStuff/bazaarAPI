@@ -1,8 +1,8 @@
 import express from 'express';
 import morgan from 'morgan';
-import { connect, disconnect } from './database';
-import marketplaceRouter from './routers/marketplaceRouter';
-import errorHandler from './middleware/errorHandler';
+import { connect, disconnect } from './database.js';
+import marketplaceRouter from './routers/marketplaceRouter.js';
+import errorHandler from './middleware/errorHandler.js';
 
 connect();
 const server = express();

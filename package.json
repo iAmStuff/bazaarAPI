@@ -3,12 +3,10 @@
   "version": "1.0.0",
   "description": "",
   "main": "src/server.js",
+  "type": "module",
   "scripts": {
-    "build": "rimraf dist && babel -d dist src",
-    "start": "yarn run build && node dist/server.js",
-    "start:watch": "yarn run build && nodemon --watch src --exec yarn start",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "yarn run start:watch"
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js"
   },
   "keywords": [],
   "author": "",

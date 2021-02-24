@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import MarketplaceModel from '../models/marketplaceModel';
+import MarketplaceModel from '../models/marketplaceModel.js';
 const router = Router();
 
 router
