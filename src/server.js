@@ -2,6 +2,7 @@ import express from 'express';
 import morgan from 'morgan';
 import { connect, disconnect } from './database';
 import marketplaceRouter from './routers/marketplaceRouter';
+import errorHandler from './middleware/errorHandler';
 
 connect();
 const server = express();
@@ -14,6 +15,8 @@ server.use('/api/marketplaces', marketplaceRouter);
 server.use('*', (req, res) => {
   return res.status(404).json({ error: 'Route not found' });
 });
+
+server.use(errorHandler);
 
 server.listen(PORT, () => {
   console.log(`Server is listening on port ${PORT}`);

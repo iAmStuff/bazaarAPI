@@ -4,16 +4,15 @@ const router = Router();
 
 router
   .route('/')
-  .get(async (req, res) => {
+  .get(async (req, res, next) => {
     try {
       const marketplaces = await MarketplaceModel.find();
       return res.send(marketplaces);
     } catch (e) {
-      console.error(e);
-      return res.status(500).send(e);
+      next(e);
     }
   })
-  .post(async (req, res) => {
+  .post(async (req, res, next) => {
     try {
       const { body } = req;
 
@@ -37,14 +36,13 @@ router
         .status(201)
         .json({ success: true, type: 'POST', data: { _id: marketplace._id } });
     } catch (e) {
-      console.error(e);
-      return res.status(500).send(e);
+      next(e);
     }
   });
 
 router
   .route('/:id')
-  .get(async (req, res) => {
+  .get(async (req, res, next) => {
     const id = req.params.id;
 
     const marketExists = await MarketplaceModel.findById(id);
@@ -53,7 +51,7 @@ router
     }
     return res.status(200).send(marketExists);
   })
-  .put(async (req, res) => {
+  .put(async (req, res, next) => {
     try {
       const { body, params } = req;
 
@@ -86,11 +84,10 @@ router
         .status(200)
         .json({ success: true, type: 'PUT', data: marketplace });
     } catch (e) {
-      console.error(e);
-      return res.status(500).send(e);
+      next(e);
     }
   })
-  .delete(async (req, res) => {
+  .delete(async (req, res, next) => {
     try {
       const { params } = req;
 
@@ -101,8 +98,7 @@ router
 
       return res.status(200).json({ success: true, type: 'DELETE' });
     } catch (e) {
-      console.error(e);
-      return res.status(500).send(e);
+      next(e);
     }
   });
 
