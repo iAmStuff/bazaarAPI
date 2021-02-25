@@ -7,6 +7,7 @@ router
   .get(async (req, res, next) => {
     try {
       const marketplaces = await MarketplaceModel.find();
+      throw new Error('wowsers');
       return res.send(marketplaces);
     } catch (e) {
       next(e);
