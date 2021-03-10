@@ -1,6 +1,7 @@
 import { Router } from "express";
 import argon2 from "argon2";
 import userModel from "../models/userModel.js";
+import { v4 as uuidv4 } from "uuid";
 
 const router = Router();
 
@@ -59,10 +60,14 @@ router.post("/login", async (req, res, next) => {
 
     //verify password
     const validPass = await argon2.verify(userData.password, password);
-    if (validPass) {
-      return res.send("Login succseseful");
+    if (!validPass) {
+      return res.status(400).send("Invalid username/password");
     }
-    return res.status(400).send("Invalid username/password");
+
+    const token = uuidv4();
+    userData.token = token;
+    await userData.save();
+    return res.json({ success: true, message: "Login successful!", token });
   } catch (e) {
     console.error(e);
     return res.status(500).send(e);

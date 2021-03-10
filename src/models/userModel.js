@@ -7,6 +7,7 @@ const model = new Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   hint: { type: String },
+  token: { type: String, unique: true },
 });
 
 export default mongoose.model("users", model);
