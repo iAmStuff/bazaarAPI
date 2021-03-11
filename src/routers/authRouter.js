@@ -1,7 +1,7 @@
 import { Router } from "express";
 import argon2 from "argon2";
 import userModel from "../models/userModel.js";
-import { v4 as uuidv4 } from "uuid";
+import jwt from "jsonwebtoken";
 
 const router = Router();
 
@@ -64,14 +64,25 @@ router.post("/login", async (req, res, next) => {
       return res.status(400).send("Invalid username/password");
     }
 
-    const token = uuidv4();
+    const token = createToken(userData._id, userData.username);
     userData.token = token;
-    await userData.save();
     return res.json({ success: true, message: "Login successful!", token });
   } catch (e) {
     console.error(e);
     return res.status(500).send(e);
   }
 });
+
+const createToken = (sub, name) => {
+  const SUPERSECRETTHINGNOBODYKNOWS = "shhhhhshhshhh";
+  const payload = {
+    sub: sub,
+    name,
+  };
+  const myToken = jwt.sign(payload, SUPERSECRETTHINGNOBODYKNOWS, {
+    expiresIn: "1h",
+  });
+  return myToken;
+};
 
 export default router;
