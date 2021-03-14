@@ -2,6 +2,19 @@ import { Router } from "express";
 import argon2 from "argon2";
 import userModel from "../models/userModel.js";
 import jwt from "jsonwebtoken";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const certPath = path.normalize(
+  path.join(fileURLToPath(import.meta.url), "..", "..", "certs")
+);
+
+const privateCertPath = path.join(certPath, "jwtRS256.key");
+if (!fs.existsSync(privateCertPath)) {
+  throw new Error("Could not find RS256 private key");
+}
+const privateCert = fs.readFileSync(privateCertPath);
 
 const router = Router();
 
@@ -74,14 +87,15 @@ router.post("/login", async (req, res, next) => {
 });
 
 const createToken = (sub, name) => {
-  const SUPERSECRETTHINGNOBODYKNOWS = "shhhhhshhshhh";
+  const opts = {
+    algorithm: "RS256",
+    expiresIn: "1h",
+  };
   const payload = {
     sub: sub,
     name,
   };
-  const myToken = jwt.sign(payload, SUPERSECRETTHINGNOBODYKNOWS, {
-    expiresIn: "1h",
-  });
+  const myToken = jwt.sign(payload, privateCert, opts);
   return myToken;
 };
 
